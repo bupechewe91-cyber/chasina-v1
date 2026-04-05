@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chasina</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">Chasina</div>
+    <div class="streak-badge">
+      <span>🔥</span> <span id="streakCount">0</span> day streak
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <h3>Today's Session</h3>
+      <div class="session-stats">
+        <span id="topicCount">0 topics</span>
+        <span id="correctCount">0 correct</span>
+      </div>
+      <div id="topicList"></div>
+      <div id="reviewReminder" class="review-reminder hidden"></div>
+    </aside>
+
+    <main class="study-area">
+<!-- Stage 1: Input -->
+      <div id="inputStage" class="stage">
+        <h2>What do you want to study?</h2>
+        <select id="subject">
+          <option value="Mathematics">Mathematics</option>
+          <option value="Science">Science</option>
+          <option value="History">History</option>
+          <option value="English">English</option>
+          <option value="Geography">Geography</option>
+          <option value="General">General</option>
+        </select>
+        <textarea id="topicInput"
+          placeholder="e.g. How does photosynthesis work?"></textarea>
+        <button id="studyBtn" onclick="startStudy()">Study This</button>
+      </div>
+
+      <!-- Stage 2: Explanation -->
+      <div id="explainStage" class="stage hidden">
+        <div class="stage-label">Explanation</div>
+        <div id="explanationText" class="response-box"></div>
+        <div class="stage-actions">
+          <button class="btn-secondary" onclick="simplify()">Simplify this</button>
+          <button class="btn-primary" onclick="proceedToTest()">I understand - Test me</button>
+        </div>
+      </div>
+
+      <!-- Stage 3: Test -->
+      <div id="testStage" class="stage hidden">
+        <div class="stage-label">Test Yourself</div>
+        <div id="testQuestionText" class="question-box"></div>
+        <textarea id="studentAnswer" placeholder="Type your answer here..."></textarea>
+        <button class="btn-primary" onclick="checkAnswer()">Submit Answer</button>
+      </div>
+
+      <!-- Stage 4: Feedback + Confidence -->
+      <div id="feedbackStage" class="stage hidden">
+        <div id="resultBadge" class="result-badge"></div>
+        <div id="feedbackText" class="response-box"></div>
+        <div class="confidence-prompt">How well did you understand this topic?</div>
+        <div class="confidence-buttons">
+          <button onclick="rateConfidence('got-it')">Got it</button>
+          <button onclick="rateConfidence('sort-of')">Sort of</button>
+          <button onclick="rateConfidence('lost')">Lost</button>
+        </div>
+      </div>
+
+      <!-- Stage 5: Summary -->
+      <div id="summaryStage" class="stage hidden">
+        <div class="stage-label">Topic Complete</div>
+        <div id="summaryText" class="summary-box"></div>
+        <button class="btn-primary" onclick="studyAnother()">Study Another Topic</button>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
