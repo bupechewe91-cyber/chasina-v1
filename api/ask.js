@@ -6,55 +6,24 @@ export default async function handler(req, res) {
   let prompt = '';
 
   if (action === 'explain') {
-    prompt = `You are Chasina, a warm and encouraging AI teacher for students.
-Subject: ${subject}
-Topic: ${topic}
-
-Respond in EXACTLY this format:
-
-EXPLANATION:
-[One clear sentence summary.]
-[Numbered steps 1-5, simple words.]
-Real-world example: [A short relatable example.]
-
-TEST_QUESTION:
-[One short question to test understanding.]`;
+    prompt = `You are Chasina, a warm AI teacher.\nSubject: ${subject}\nTopic: ${topic}\n\nRespond in EXACTLY this format:\n\nEXPLANATION:\nOne clear sentence summary.\n1. Step one\n2. Step two\n3. Step three\nReal-world example: A short example.\n\nTEST_QUESTION:\nOne short question to test understanding.`;
 
   } else if (action === 'simplify') {
-    prompt = `You are Chasina, an AI teacher. The student did not understand.
-Explain as if the student is 12 years old. Use simple words and a short analogy. Max 4 sentences.
-Subject: ${subject}
-Topic: ${topic}
-
-Respond in EXACTLY this format:
-
-EXPLANATION:
-[Your simplified explanation.]
-
-TEST_QUESTION:
-[One very simple question.]`;
+    prompt = `You are Chasina. Explain to a 12 year old.\nSubject: ${subject}\nTopic: ${topic}\n\nRespond in EXACTLY this format:\n\nEXPLANATION:\nSimple explanation in 4 sentences.\n\nTEST_QUESTION:\nOne very simple question.`;
 
   } else if (action === 'check') {
-    prompt = `You are Chasina, evaluating a student's answer. Be kind but honest.
-Topic: ${topic}
-Question: ${testQuestion}
-Student answer: ${studentAnswer}
+    prompt = `You are Chasina evaluating a student.\nTopic: ${topic}\nQuestion: ${testQuestion}\nStudent answer: ${studentAnswer}\n\nRespond in EXACTLY this format:\n\nRESULT: CORRECT\nor\nRESULT: PARTIAL\nor\nRESULT: INCORRECT\n\nFEEDBACK:\n2-3 kind sentences about their answer.`;
+  }
 
-Respond in EXACTLY this format:
+  const apiKey = process.env.GEMINI_API_KEY;
 
-RESULT: CORRECT
-or
-RESULT: PARTIAL
-or
-RESULT: INCORRECT
-
-FEEDBACK:
-[2-3 sentences: what they got right, what they missed, correct answer if needed.]`;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'API key not configured' });
   }
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,11 +34,16 @@ FEEDBACK:
     );
 
     const data = await response.json();
+
+    if (!data.candidates || !data.candidates[0]) {
+      return res.status(500).json({ error: 'No response from AI', details: data });
+    }
+
     const text = data.candidates[0].content.parts[0].text;
     res.status(200).json({ answer: text });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error: err.message });
   }
 }
